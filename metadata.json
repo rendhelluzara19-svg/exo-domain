@@ -1,0 +1,6 @@
+{
+  "name": "Exo Domain",
+  "description": "Premium dual-ecosystem platform for exotic pets and feeders with strict KYC, subscriptions, and financial structures.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
