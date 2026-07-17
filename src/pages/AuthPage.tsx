@@ -1,19 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useApp } from '@/context/AppContext';
-import { useNavigate } from 'react-router-dom'; // Siguraduhing naka-import ito
-import { ShieldAlert, LogIn, Fingerprint, Eye, EyeOff } from 'lucide-react';
+import { ShieldAlert } from 'lucide-react';
 import { Role } from '@/types';
 
 export function AuthPage() {
   const { users, setCurrentUser, registerUser } = useApp();
-  const navigate = useNavigate(); // Gamitin ang navigate para sa routing
   
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false); // Idinagdag para maiwasan ang double-render
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,20 +18,20 @@ export function AuthPage() {
     setError('');
     
     try {
-      // DITO ANG FIX: Hinihintay natin matapos ang registration bago mag-navigate
       await registerUser({
         email,
         password,
-        name: 'New User', // I-adjust base sa state mo
+        name: 'New User',
         role: 'BUYER' as Role,
         status: 'APPROVED',
       });
 
-      console.log("[Auth] Registration successful, redirecting...");
-      navigate('/dashboard'); 
+      // FIX: Imbes na navigate, gamitin ang window.location
+      // Ito ay pilit na mag-re-refresh ng buong App, kaya mawawala ang white screen
+      window.location.href = '/'; 
     } catch (err: any) {
       console.error("[Auth] Registration error:", err);
-      setError(err.message || 'Registration failed. Please try again.');
+      setError(err.message || 'Registration failed.');
     } finally {
       setIsLoading(false);
     }
@@ -52,9 +49,8 @@ export function AuthPage() {
         if (user.status === 'PENDING') throw new Error('Account pending approval.');
         
         setCurrentUser(user);
-        // HINDI NA NATIN KAILANGAN NG MANUAL LOCALSTORAGE DITO
-        // Ang setCurrentUser sa Context ang bahala dapat mag-update ng state
-        navigate('/dashboard'); 
+        // FIX: Hard redirect para siguradong fresh load ng page
+        window.location.href = '/'; 
       } else {
         throw new Error('Invalid email or password.');
       }
@@ -66,7 +62,7 @@ export function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-slate-950">
       <form onSubmit={isLogin ? handleLogin : handleRegister} className="w-full max-w-sm bg-slate-900 p-8 rounded-2xl shadow-xl">
         <h1 className="text-2xl font-bold text-white mb-6">{isLogin ? 'Sign In' : 'Register'}</h1>
         
@@ -86,7 +82,7 @@ export function AuthPage() {
         />
         
         <input 
-          type={showPassword ? 'text' : 'password'} 
+          type="password" 
           value={password} 
           onChange={e => setPassword(e.target.value)} 
           placeholder="Password" 
