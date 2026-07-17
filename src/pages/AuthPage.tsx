@@ -1,21 +1,32 @@
 import React, { useState } from 'react';
 import { useApp } from '@/context/AppContext';
-import { ShieldAlert } from 'lucide-react';
 
 export function AuthPage() {
   const { registerUser } = useApp();
   const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState({ role: 'BUYER', email: '', password: '' });
+  const [formData, setFormData] = useState({ 
+    role: 'BUYER', 
+    itemType: 'FEEDER', 
+    email: '', 
+    password: '' 
+  });
   const [isLoading, setIsLoading] = useState(false);
+
+  const needsDenr = ['REPTILE', 'MAMMAL', 'BIRD'].includes(formData.itemType);
 
   const handleRegister = async () => {
     setIsLoading(true);
     try {
-      await registerUser({ ...formData, status: 'PENDING_VERIFICATION' });
-      alert("Registration submitted! Pending approval.");
+      await registerUser({ 
+        ...formData, 
+        status: 'PENDING_VERIFICATION' 
+      });
       window.location.href = '/';
-    } catch (err) { alert("Error submitting."); }
-    finally { setIsLoading(false); }
+    } catch (err) { 
+      alert("Registration failed."); 
+    } finally { 
+      setIsLoading(false); 
+    }
   };
 
   return (
@@ -33,14 +44,22 @@ export function AuthPage() {
               <option value="BUYER">Buyer</option>
               <option value="SELLER">Seller</option>
             </select>
+            {formData.role === 'SELLER' && (
+              <select className="w-full p-3 bg-slate-800 text-white rounded" onChange={e => setFormData({...formData, itemType: e.target.value})}>
+                <option value="FEEDER">Feeders (No DENR)</option>
+                <option value="REPTILE">Reptiles (Needs DENR)</option>
+                <option value="MAMMAL">Mammals (Needs DENR)</option>
+                <option value="BIRD">Birds (Needs DENR)</option>
+              </select>
+            )}
             <button onClick={() => setStep(2)} className="w-full bg-emerald-500 py-3 rounded font-bold">Next</button>
           </div>
         ) : (
           <div className="space-y-4">
-            <p className="text-xs text-slate-400">Upload Valid ID, Selfie with ID, and DENR Papers (if Seller).</p>
+            <p className="text-[10px] text-slate-400">Upload Valid ID, Selfie with ID {needsDenr && ", and DENR Permit"}.</p>
             <input type="file" className="w-full text-white text-xs" />
             <input type="file" className="w-full text-white text-xs" />
-            {formData.role === 'SELLER' && <input type="file" className="w-full text-white text-xs" placeholder="DENR Paper" />}
+            {needsDenr && <input type="file" className="w-full text-white text-xs" />}
             <div className="flex gap-2">
               <button onClick={() => setStep(1)} className="w-1/3 bg-slate-700 py-3 rounded text-white">Back</button>
               <button onClick={handleRegister} disabled={isLoading} className="w-2/3 bg-emerald-500 py-3 rounded font-bold">
