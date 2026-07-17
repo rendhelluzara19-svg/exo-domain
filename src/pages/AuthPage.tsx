@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { useApp } from '@/context/AppContext';
-import { ShieldAlert, Fingerprint } from 'lucide-react';
+import { ShieldAlert } from 'lucide-react';
 import { Role } from '@/types';
 
 export function AuthPage() {
   const { users, setCurrentUser, registerUser } = useApp();
   
-  const [isLogin, setIsLogin] = useState(true);
+  const [isLogin, setIsLogin] = useState(true); // Ito ang nagpapatakbo ng toggle
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -57,7 +57,6 @@ export function AuthPage() {
 
   return (
     <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-4">
-      {/* Login Form */}
       <div className="w-full max-w-sm">
         <h1 className="text-3xl font-bold text-white mb-8 text-center tracking-tighter">Exo Domain</h1>
         
@@ -76,13 +75,20 @@ export function AuthPage() {
           <button type="submit" disabled={isLoading} className="w-full bg-emerald-500 py-3 rounded-lg font-bold text-slate-950 hover:bg-emerald-400 disabled:opacity-50">
             {isLoading ? 'Processing...' : (isLogin ? 'Sign In' : 'Register')}
           </button>
+
+          {/* ITONG BUTTON NA ITO ANG NAGPAPALIT NG SIGN IN AT REGISTER */}
+          <button 
+            type="button" 
+            onClick={() => setIsLogin(!isLogin)}
+            className="w-full mt-4 text-xs text-gray-500 hover:text-white transition-colors"
+          >
+            {isLogin ? 'No account? Register here' : 'Already have an account? Sign In'}
+          </button>
         </form>
 
-        {/* Security Panels (yung nawala na UI) */}
         <div className="mt-6 bg-slate-900/50 p-4 rounded-xl border border-white/10">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-emerald-400 font-bold text-[10px] uppercase tracking-widest">Security Enclave v4.2</h3>
-            <span className="text-[10px] text-slate-500">Node: 3000</span>
           </div>
           <div className="grid grid-cols-2 gap-2">
             <div className="bg-slate-950 p-2 rounded border border-white/5 text-[9px] text-slate-400">Strength Shield: <span className="text-white">Active</span></div>
